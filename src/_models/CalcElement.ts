@@ -1,4 +1,4 @@
 export default interface CalcElement {
-    number: number,
+    number: string,
     operator: string|null
 }
