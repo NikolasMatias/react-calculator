@@ -1,27 +1,17 @@
-import {createContext, useContext, useState} from "react";
+import {createContext, useContext, useState, PropsWithChildren} from "react";
 
-export const ThemeContext = createContext('white');
-export const ThemeUpdateContext = createContext(() => {});
+export const ThemeContext = createContext({theme: 'white', setTheme: (newTheme : string) => {}});
 
 export function useTheme () {
-    const theme = useContext(ThemeContext);
-    const setTheme = useContext(ThemeUpdateContext);
-
+    const {theme,setTheme} = useContext(ThemeContext);
     return [theme, setTheme];
 }
 
-const ThemeContextProvider = ({children}) => {
+const ThemeContextProvider: React.FC = ({children}) => {
     const [theme, setTheme] = useState<string>('white');
-
-    function updateTheme(newTheme : string) {
-        setTheme(newTheme);
-    }
-
     return (
-        <ThemeContext.Provider value={theme}>
-            <ThemeUpdateContext.Provider value={updateTheme}>
-                {children}
-            </ThemeUpdateContext.Provider>
+        <ThemeContext.Provider value={{theme: theme, setTheme: setTheme}}>
+            {children}
         </ThemeContext.Provider>
     );
 }

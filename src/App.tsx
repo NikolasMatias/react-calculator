@@ -4,15 +4,9 @@ import './App.scss';
 import CalcElement from "./_models/CalcElement";
 import ThemeContextProvider, {useTheme} from "./contexts/ThemeContext";
 import usePrevious from "./hooks/usePrevious";
-import Calculator from "./_services/Calculator";
+import Calculator, {calculatorPattern} from "./_services/Calculator";
 
 const calcElementPattern = {number: '0', operator: null};
-const calculator_pattern = {
-  plus: '+',
-  minus: '-',
-  times: 'X',
-  divided: '÷'
-};
 
 function App() {
   const [calcElements, setCalcElements] = useState<CalcElement[]>([]);
@@ -44,7 +38,7 @@ function App() {
     updateCalc();
   }, [actualElement]);
 
-  function addToActualElement(increment : string, operatorChange = null) {
+  function addToActualElement(increment : string, operatorChange = null as string|null) {
     if (increment != null)
       setActualElement(prevState => {
         let newState;
@@ -62,7 +56,9 @@ function App() {
       let elements = actualElement.number != '0' ? [...calcElements, actualElement] : calcElements.slice();
       setCalcElements(elements);
       setResult(elements.reduce((previousValue, currentValue, currentIndex, array) => {
-        return {number: (Calculator[previousValue.operator](previousValue.number, currentValue.number)).toString(), operator: currentValue.operator};
+        if (previousValue.operator !== null)
+          return {number: (Calculator[previousValue.operator](previousValue.number, currentValue.number)).toString(), operator: currentValue.operator};
+        return previousValue;
       }).number);
       setActualElement(calcElementPattern);
     }
@@ -82,7 +78,7 @@ function App() {
               <div className="elements-prev">
                 {calcElements.map((prevCalcElement, index, array) => {
                   return (
-                      <p key={index}>{`  ${prevCalcElement.number} ${prevCalcElement.operator != null ? calculator_pattern[prevCalcElement.operator] : ' '}  `}</p>
+                      <p key={index}>{`  ${prevCalcElement.number} ${prevCalcElement.operator != null ? calculatorPattern['plus'] : ' '}  `}</p>
                   );
                 })}
               </div>
